@@ -11,45 +11,28 @@ int[] greens = new int[total];
 int[] blues = new int[total];
 
 int timer = 0;
-int counter = 0;
+int counter = 1;
 
 void setup() {
   size(640, 480);
-  
-  smooth();
   rectMode(CENTER);
 
   for (int i = 0; i < total; i++) {
-    lengths[i] = floor(random(1) * 50);
+    lengths[i] = 0;
     reds[i] = floor(random(1) * 255);
     greens[i] = floor(random(1) * 255);
     blues[i] = floor(random(1) * 255);
   }
-  
-  noStroke();
 }
 
 void draw() {
   background(0);
 
-  // 0 == counter is the initial condition.
-  if (0 == counter || lengths[counter - 1] == timer) {
-    counter++;
-
-    // Update timer if defined.
-    if (counter < lengths.length) {
-      timer = lengths[counter - 1];
-      lengths[counter - 1] = 0;
-    }
-  } else {
-    lengths[counter - 1]++;
-  }
+  lengths[counter - 1]++;
 
   if (counter >= lengths.length) {
     noLoop();
   }
-
-  // println("Counter: " + counter);
 
   // Box.
   int boxLeft = 0;
@@ -57,9 +40,11 @@ void draw() {
   int boxTop = 0;
   int boxBottom = 0;
 
-  // Compute ratios.
+  // Default direction.
   boolean horizontal = true;
   boolean negative = false;
+
+  // Compute ratios.
   for (int i = 0; i < counter; i++) {
     if (horizontal) {
       if (negative) {
@@ -86,13 +71,17 @@ void draw() {
   // Box size.
   int boxWidth = boxRight - boxLeft;
   int boxHeight = boxBottom - boxTop;
-  // println("Box w: " + boxWidth + " h:" + boxHeight);
+  float boxCenterX = boxLeft + (float) boxWidth / 2;
+  float boxCenterY = boxTop + (float) boxHeight / 2;
 
   // Ratio of size to pixels.
   float hRatio = 1.0;
   float vRatio = 1.0;
-  if (0 < boxWidth && 0 < boxHeight) {
+  
+  if (0 < boxWidth) {
     hRatio = (float) width / boxWidth;
+  }
+  if (0 < boxHeight) {
     vRatio = (float) height / boxHeight;
   }
 
@@ -116,28 +105,22 @@ void draw() {
     x = displaceX(x, lengths[i], horizontal, negative);
     y = displaceY(y, lengths[i], horizontal, negative);
 
-    // Set color.
+    // Set rect style.
+    noStroke();
     fill(reds[i], greens[i], blues[i]);
-    // translate(width>>1, height>>1);
     
-    // if (horizontal) {
-    //   print("Horizontal, ");
-    // } else {
-    //   print("Vertical, ");
-    // }
-    
-    // if (negative) {
-    //   println("Negative");
-    // } else {
-    //   println("Positive");
-    // }
+    if (1 < counter) {
+      if (horizontal) {
+        int rectW = lengths[i];
+        int rectH = boxBottom - boxTop;
 
-    if (horizontal) {
-      // println("Rect: (" + x + ", " + y + ") w: " + lengths[i] + " h:" + (boxBottom - boxTop));
-      drawWithRatio(x, y, lengths[i], boxBottom - boxTop, hRatio, vRatio);
-    } else {
-      // println("Rect: (" + x + ", " + y + ") w: " + (boxRight - boxLeft) + " h:" + lengths[i]);
-      drawWithRatio(x, y, boxRight - boxLeft, lengths[i], hRatio, vRatio);
+        drawWithRatio(x, y, rectW, rectH, hRatio, vRatio, boxCenterX, boxCenterY);
+      } else {
+        int rectW = boxRight - boxLeft;
+        int rectH = lengths[i];
+
+        drawWithRatio(x, y, rectW, rectH, hRatio, vRatio, boxCenterX, boxCenterY);
+      }
     }
 
     // Update box.
@@ -155,8 +138,6 @@ void draw() {
       }
     }
 
-    // println("Box is now L:" + boxLeft + " R:" + boxRight + " T:" + boxTop + " B:" + boxBottom);
-
     // Prepare for next iteration.
     horizontal = !horizontal;
     // - Change orientation when back in horizontal.
@@ -164,6 +145,10 @@ void draw() {
       negative = !negative;
     }
   }
+}
+
+void mouseClicked() {
+  counter++;
 }
 
 int startX(int boxLeft, int boxRight, int boxTop, int boxBottom, boolean horizontal, boolean negative) {
@@ -216,9 +201,9 @@ int displaceY(int y, int length, boolean horizontal, boolean negative) {
   return y;
 }
 
-void drawWithRatio(int x, int y, int w, int h , float hRatio, float vRatio) {
-  int centerX = (width>>1) + floor(hRatio * x);
-  int centerY = (height>>1) + floor(vRatio * y);
-  
+void drawWithRatio(int x, int y, int w, int h , float hRatio, float vRatio, float deltaX, float deltaY) {
+  int centerX = (width>>1) + floor(hRatio * (x - deltaX));
+  int centerY = (height>>1) + floor(vRatio * (y - deltaY));
+
   rect(centerX, centerY, floor(hRatio * w), floor(vRatio * h));
 }
