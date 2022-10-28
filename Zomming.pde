@@ -1,18 +1,30 @@
 float zoom = 1.0;
 final static float inc = .001;
 
+int total = 100;
+
 // Length in seconds.
-int[] length = new int[20];
+int[] lengths = new int[total];
 // Color, will later be frequency.
-int[] reds = new int[20];
-int[] greens = new int[20];
-int[] blues = new int[20];
+int[] reds = new int[total];
+int[] greens = new int[total];
+int[] blues = new int[total];
+
+int timer = 0;
+int counter = 0;
 
 void setup() {
   size(640, 480);
   
   smooth();
   rectMode(CENTER);
+
+  for (int i = 0; i < total; i++) {
+    lengths[i] = floor(random(1) * 50);
+    reds[i] = floor(random(1) * 255);
+    greens[i] = floor(random(1) * 255);
+    blues[i] = floor(random(1) * 255);
+  }
   
   noStroke();
 }
@@ -20,15 +32,24 @@ void setup() {
 void draw() {
   background(0);
 
-  for (int i = 0; i < 20; i++) {
-    length[i] = floor(random(1) * 50);
-    reds[i] = floor(random(1) * 255);
-    greens[i] = floor(random(1) * 255);
-    blues[i] = floor(random(1) * 255);
+  // 0 == counter is the initial condition.
+  if (0 == counter || lengths[counter - 1] == timer) {
+    counter++;
+
+    // Update timer if defined.
+    if (counter < lengths.length) {
+      timer = lengths[counter - 1];
+      lengths[counter - 1] = 0;
+    }
+  } else {
+    lengths[counter - 1]++;
   }
 
-  println("Lengths: ");
-  println(length);
+  if (counter >= lengths.length) {
+    noLoop();
+  }
+
+  // println("Counter: " + counter);
 
   // Box.
   int boxLeft = 0;
@@ -39,18 +60,18 @@ void draw() {
   // Compute ratios.
   boolean horizontal = true;
   boolean negative = false;
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < counter; i++) {
     if (horizontal) {
       if (negative) {
-        boxLeft -= length[i];
+        boxLeft -= lengths[i];
       } else {
-        boxRight += length[i];
+        boxRight += lengths[i];
       }
     } else {
       if (negative) {
-        boxTop -= length[i];
+        boxTop -= lengths[i];
       } else {
-        boxBottom += length[i];
+        boxBottom += lengths[i];
       }
     }
 
@@ -65,13 +86,17 @@ void draw() {
   // Box size.
   int boxWidth = boxRight - boxLeft;
   int boxHeight = boxBottom - boxTop;
-  println("Box w: " + boxWidth + " h:" + boxHeight);
+  // println("Box w: " + boxWidth + " h:" + boxHeight);
 
   // Ratio of size to pixels.
-  float hRatio = (float) (width + 20) / boxWidth;
-  float vRatio = (float) (height + 20) / boxHeight;
+  float hRatio = 1.0;
+  float vRatio = 1.0;
+  if (0 < boxWidth && 0 < boxHeight) {
+    hRatio = (float) width / boxWidth;
+    vRatio = (float) height / boxHeight;
+  }
 
-  println("Ratios: " + hRatio + " " + vRatio);
+  // println("Ratios: " + hRatio + " " + vRatio);
 
   // Default values.
   boxLeft = 0;
@@ -83,54 +108,54 @@ void draw() {
   negative = false;
   
   // Draw.
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < counter; i++) {
     // Default center position.
     int x = startX(boxLeft, boxRight, boxTop, boxBottom, horizontal, negative);
     int y = startY(boxLeft, boxRight, boxTop, boxBottom, horizontal, negative);
 
-    x = displaceX(x, length[i], horizontal, negative);
-    y = displaceY(y, length[i], horizontal, negative);
+    x = displaceX(x, lengths[i], horizontal, negative);
+    y = displaceY(y, lengths[i], horizontal, negative);
 
     // Set color.
     fill(reds[i], greens[i], blues[i]);
     // translate(width>>1, height>>1);
     
-    if (horizontal) {
-      print("Horizontal, ");
-    } else {
-      print("Vertical, ");
-    }
+    // if (horizontal) {
+    //   print("Horizontal, ");
+    // } else {
+    //   print("Vertical, ");
+    // }
     
-    if (negative) {
-      println("Negative");
-    } else {
-      println("Positive");
-    }
+    // if (negative) {
+    //   println("Negative");
+    // } else {
+    //   println("Positive");
+    // }
 
     if (horizontal) {
-      println("Rect: (" + x + ", " + y + ") w: " + length[i] + " h:" + (boxBottom - boxTop));
-      drawWithRatio(x, y, length[i], boxBottom - boxTop, hRatio, vRatio);
+      // println("Rect: (" + x + ", " + y + ") w: " + lengths[i] + " h:" + (boxBottom - boxTop));
+      drawWithRatio(x, y, lengths[i], boxBottom - boxTop, hRatio, vRatio);
     } else {
-      println("Rect: (" + x + ", " + y + ") w: " + (boxRight - boxLeft) + " h:" + length[i]);
-      drawWithRatio(x, y, boxRight - boxLeft, length[i], hRatio, vRatio);
+      // println("Rect: (" + x + ", " + y + ") w: " + (boxRight - boxLeft) + " h:" + lengths[i]);
+      drawWithRatio(x, y, boxRight - boxLeft, lengths[i], hRatio, vRatio);
     }
 
     // Update box.
     if (horizontal) {
       if (negative) {
-        boxLeft -= length[i];
+        boxLeft -= lengths[i];
       } else {
-        boxRight += length[i];
+        boxRight += lengths[i];
       }
     } else {
       if (negative) {
-        boxTop -= length[i];
+        boxTop -= lengths[i];
       } else {
-        boxBottom += length[i];
+        boxBottom += lengths[i];
       }
     }
 
-    println("Box is now L:" + boxLeft + " R:" + boxRight + " T:" + boxTop + " B:" + boxBottom);
+    // println("Box is now L:" + boxLeft + " R:" + boxRight + " T:" + boxTop + " B:" + boxBottom);
 
     // Prepare for next iteration.
     horizontal = !horizontal;
@@ -139,8 +164,6 @@ void draw() {
       negative = !negative;
     }
   }
-
-  noLoop();
 }
 
 int startX(int boxLeft, int boxRight, int boxTop, int boxBottom, boolean horizontal, boolean negative) {
