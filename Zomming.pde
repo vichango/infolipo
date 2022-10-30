@@ -1,5 +1,7 @@
-float zoom = 1.0;
-final static float inc = .001;
+import oscP5.*;
+
+// OSC receiver?
+OscP5 oscP5;
 
 int total = 100;
 
@@ -13,6 +15,10 @@ int[] blues = new int[total];
 int timer = 0;
 int counter = 1;
 
+String message = "";
+float frequence = 440;
+float amplitude = 0;
+
 void setup() {
   size(640, 480);
   rectMode(CENTER);
@@ -23,16 +29,21 @@ void setup() {
     greens[i] = floor(random(1) * 255);
     blues[i] = floor(random(1) * 255);
   }
+
+  // Initialize an instance listening to port 12000.
+  oscP5 = new OscP5(this,12000);
 }
 
 void draw() {
   background(0);
 
-  lengths[counter - 1]++;
-
-  if (counter >= lengths.length) {
+  // Stop draw loop when counter reaches our table limit.
+  if (counter >= total) {
     noLoop();
   }
+
+  // Increase length of current "bit".
+  lengths[counter - 1]++;
 
   // Box.
   int boxLeft = 0;
@@ -85,8 +96,6 @@ void draw() {
     vRatio = (float) height / boxHeight;
   }
 
-  // println("Ratios: " + hRatio + " " + vRatio);
-
   // Default values.
   boxLeft = 0;
   boxRight = 0;
@@ -99,8 +108,8 @@ void draw() {
   // Draw.
   for (int i = 0; i < counter; i++) {
     // Default center position.
-    int x = startX(boxLeft, boxRight, boxTop, boxBottom, horizontal, negative);
-    int y = startY(boxLeft, boxRight, boxTop, boxBottom, horizontal, negative);
+    int x = startX(boxLeft, boxRight, horizontal, negative);
+    int y = startY(boxTop, boxBottom, horizontal, negative);
 
     x = displaceX(x, lengths[i], horizontal, negative);
     y = displaceY(y, lengths[i], horizontal, negative);
@@ -145,65 +154,4 @@ void draw() {
       negative = !negative;
     }
   }
-}
-
-void mouseClicked() {
-  counter++;
-}
-
-int startX(int boxLeft, int boxRight, int boxTop, int boxBottom, boolean horizontal, boolean negative) {
-  if (horizontal) {
-    if (negative) {
-      return boxLeft;
-    } else {
-      return boxRight;
-    }
-  } else {
-    return boxLeft + floor((boxRight - boxLeft) / 2);
-  }
-}
-
-int startY(int boxLeft, int boxRight, int boxTop, int boxBottom, boolean horizontal, boolean negative) {
-  if (horizontal) {
-    return boxTop + floor((boxBottom - boxTop) / 2);
-  } else {
-    if (negative) {
-      return boxTop;
-    } else {
-      return boxBottom;
-    }
-  }
-}
-
-int displaceX(int x, int length, boolean horizontal, boolean negative) {
-  // Displace x of width + half length if the given direction is horizontal.
-  if (horizontal) {
-    if (negative) {
-      x -= floor(length / 2);
-    } else {
-      x += floor(length / 2);
-    }
-  }
-
-  return x;
-}
-
-int displaceY(int y, int length, boolean horizontal, boolean negative) {
-  // Displace y of height + half length if the given direction is vertical (not horizontal).
-  if (!horizontal) {
-    if (negative) {
-      y -= floor(length / 2);
-    } else {
-      y += floor(length / 2);
-    }
-  }
-
-  return y;
-}
-
-void drawWithRatio(int x, int y, int w, int h , float hRatio, float vRatio, float deltaX, float deltaY) {
-  int centerX = (width>>1) + floor(hRatio * (x - deltaX));
-  int centerY = (height>>1) + floor(vRatio * (y - deltaY));
-
-  rect(centerX, centerY, floor(hRatio * w), floor(vRatio * h));
 }
