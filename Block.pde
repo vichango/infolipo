@@ -1,17 +1,19 @@
 /**
  * The music between silences.
  *
- * NOTE Currently a single frequency only.
+ * NOTE Currently a single note only.
  */
 class Block {
-  float frequency;
+  int note;
+  float amplitude;
 
   // Temporarily duration is in loops.
-  int duration;
+  float duration;
 
-  Block (float tempFrequency) {
+  Block (int tempNote, float tempAmplitude) {
     duration = 0;
-    frequency = tempFrequency;
+    note = tempNote;
+    amplitude = tempAmplitude;
   }
 
   void incrementDuration() {
@@ -19,22 +21,17 @@ class Block {
   }
 
   void zoomOutDuration(float factor) {
-    duration = floor(duration * factor);
+    duration *= factor;
   }
 
   /**
    * Temporary method returning the color based on the frequency.
    */
   color getColor() {
-    // Accepted frequencies only between A4 and A6.
-    int maxA = 1760;
-    int minA = 440;
+    // Accepted notes only between A4 and A6.
+    int hue = note % 12;
+    int brightness = floor(amplitude * 100);
 
-    float normalised = min(maxA, max(minA, frequency));
-
-    // Compute gray level between 0 and 255
-    int grayLevel = floor(255 * (normalised - minA) / (maxA - minA));
-
-    return color(grayLevel, grayLevel, grayLevel);
+    return color(hue, 1, brightness);
   }
 }

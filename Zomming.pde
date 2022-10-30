@@ -5,9 +5,13 @@ OscP5 oscP5;
 
 Set mainSet;
 
+int lastNote;
+float lastAmplitude;
+
 void setup() {
   size(640, 480);
   rectMode(CENTER);
+  colorMode(HSB, 13, 1, 100);
 
   // Init block set.
   mainSet = new Set();

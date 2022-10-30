@@ -2,10 +2,10 @@
  * The whole set of blocks.
  */
  class Set {
-  boolean initialHorizonal = true;
-  boolean initialNegative = false;
+  final boolean initialHorizonal = true;
+  final boolean initialNegative = false;
 
-  float zoomFactor = 0.95;
+  final float zoomFactor = 0.95;
 
   ArrayList<Block> blocks = new ArrayList<Block>();
 
@@ -21,11 +21,11 @@
     return blocks.get(size - 1);
   }
 
-  void addBlock(float frequency) {
+  void addBlock(int note, float amplitude) {
     // Zoom out.
     zoomOut();
 
-    Block newBlock = new Block(frequency);
+    Block newBlock = new Block(note, amplitude);
     blocks.add(newBlock);
   }
 
@@ -40,13 +40,13 @@
   void display() {
     // Compute the size to pixel ratio.
     // - Pre-compute boundaries.
-    int[] boundaries = boxBoundaries();
+    FloatDict boundaries = boxBoundaries();
 
-    int boxWidth = boundaries[1] - boundaries[3];
-    int boxHeight = boundaries[2] - boundaries[0];
+    float boxWidth = boundaries.get("right") - boundaries.get("left");
+    float boxHeight = boundaries.get("bottom") - boundaries.get("top");
 
-    float boxCenterX = boxLeft + (float) boxWidth / 2;
-    float boxCenterY = boxTop + (float) boxHeight / 2;
+    float boxCenterX = boundaries.get("left") + boxWidth / 2;
+    float boxCenterY = boundaries.get("top") + boxHeight / 2;
 
     // - Default valuese.
     float hRatio = 1.0;
@@ -60,10 +60,10 @@
     }
 
     // Actual drawing.
-    int boxLeft = 0;
-    int boxRight = 0;
-    int boxTop = 0;
-    int boxBottom = 0;
+    float boxLeft = 0;
+    float boxRight = 0;
+    float boxTop = 0;
+    float boxBottom = 0;
 
     boolean horizontal = initialHorizonal;
     boolean negative = initialNegative;
@@ -72,8 +72,8 @@
       Block current = blocks.get(i);
 
       // Default center position.
-      int x = startX(boxLeft, boxRight, horizontal, negative);
-      int y = startY(boxTop, boxBottom, horizontal, negative);
+      float x = startX(boxLeft, boxRight, horizontal, negative);
+      float y = startY(boxTop, boxBottom, horizontal, negative);
 
       x = displaceX(x, current.duration, horizontal, negative);
       y = displaceY(y, current.duration, horizontal, negative);
@@ -85,13 +85,13 @@
       // Start drawing when we have two blocks.
       if (1 < blocks.size()) {
         if (horizontal) {
-          int rectW = current.duration;
-          int rectH = boxBottom - boxTop;
+          float rectW = current.duration;
+          float rectH = boxBottom - boxTop;
 
           drawWithRatio(x, y, rectW, rectH, hRatio, vRatio, boxCenterX, boxCenterY);
         } else {
-          int rectW = boxRight - boxLeft;
-          int rectH = current.duration;
+          float rectW = boxRight - boxLeft;
+          float rectH = current.duration;
 
           drawWithRatio(x, y, rectW, rectH, hRatio, vRatio, boxCenterX, boxCenterY);
         }
@@ -123,7 +123,12 @@
   private void zoomOut() {
     for (int i = 0; i < blocks.size(); i++) {
       Block current = blocks.get(i);
-      current.zoomOutDuration(zoomFactor);
+
+      // Factor will get stronger the deeper we go.
+      // NOTE An exponential of (0.25 * depth) works well for zoom factor 0.95.
+      float currentFactor = pow(zoomFactor, 0.25 * (blocks.size() - i));
+
+      current.zoomOutDuration(currentFactor);
     }
 
     // Remove oldest pack of 4 if duration reaches already 0.
@@ -132,7 +137,7 @@
       for (int i = 0; clean && i < 4; i++) {
         Block current = blocks.get(i);
 
-        if (0 < current.duration) {
+        if (1 < current.duration) {
           clean = false;
         }
       }
@@ -147,12 +152,12 @@
     }
   }
 
-  private int[] boxBoundaries() {
+  private FloatDict boxBoundaries() {
     // Box.
-    int boxTop = 0;
-    int boxRight = 0;
-    int boxBottom = 0;
-    int boxLeft = 0;
+    float boxTop = 0;
+    float boxRight = 0;
+    float boxBottom = 0;
+    float boxLeft = 0;
 
     // Default direction.
     boolean horizontal = initialHorizonal;
@@ -183,8 +188,8 @@
     }
 
     // Box size.
-    int boxWidth = boxRight - boxLeft;
-    int boxHeight = boxBottom - boxTop;
+    float boxWidth = boxRight - boxLeft;
+    float boxHeight = boxBottom - boxTop;
     float boxCenterX = boxLeft + (float) boxWidth / 2;
     float boxCenterY = boxTop + (float) boxHeight / 2;
 
@@ -199,16 +204,16 @@
       vRatio = (float) height / boxHeight;
     }
 
-    int[] boundaries = int[4];
-    boundaries[0] = boxTop;
-    boundaries[1] = boxRight;
-    boundaries[2] = boxBottom;
-    boundaries[3] = boxLeft;
+    FloatDict boundaries = new FloatDict();
+    boundaries.set("top", boxTop);
+    boundaries.set("right", boxRight);
+    boundaries.set("bottom", boxBottom);
+    boundaries.set("left", boxLeft);
 
     return boundaries;
   }
 
-  private int startX(int boxLeft, int boxRight, boolean horizontal, boolean negative) {
+  private float startX(float boxLeft, float boxRight, boolean horizontal, boolean negative) {
     if (horizontal) {
       if (negative) {
         return boxLeft;
@@ -216,13 +221,13 @@
         return boxRight;
       }
     } else {
-      return boxLeft + floor((boxRight - boxLeft) / 2);
+      return boxLeft + (boxRight - boxLeft) / 2;
     }
   }
 
-  private int startY(int boxTop, int boxBottom, boolean horizontal, boolean negative) {
+  private float startY(float boxTop, float boxBottom, boolean horizontal, boolean negative) {
     if (horizontal) {
-      return boxTop + floor((boxBottom - boxTop) / 2);
+      return boxTop + (boxBottom - boxTop) / 2;
     } else {
       if (negative) {
         return boxTop;
@@ -232,33 +237,33 @@
     }
   }
 
-  private int displaceX(int x, int length, boolean horizontal, boolean negative) {
+  private float displaceX(float x, float length, boolean horizontal, boolean negative) {
     // Displace x of width + half length if the given direction is horizontal.
     if (horizontal) {
       if (negative) {
-        x -= floor(length / 2);
+        x -= length / 2;
       } else {
-        x += floor(length / 2);
+        x += length / 2;
       }
     }
 
     return x;
   }
 
-  private int displaceY(int y, int length, boolean horizontal, boolean negative) {
+  private float displaceY(float y, float length, boolean horizontal, boolean negative) {
     // Displace y of height + half length if the given direction is vertical (not horizontal).
     if (!horizontal) {
       if (negative) {
-        y -= floor(length / 2);
+        y -= length / 2;
       } else {
-        y += floor(length / 2);
+        y += length / 2;
       }
     }
 
     return y;
   }
 
-  private void drawWithRatio(int x, int y, int w, int h , float hRatio, float vRatio, float deltaX, float deltaY) {
+  private void drawWithRatio(float x, float y, float w, float h , float hRatio, float vRatio, float deltaX, float deltaY) {
     int centerX = (width>>1) + floor(hRatio * (x - deltaX));
     int centerY = (height>>1) + floor(vRatio * (y - deltaY));
 
