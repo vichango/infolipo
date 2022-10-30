@@ -33,6 +33,11 @@ void oscEvent(OscMessage theOscMessage) {
 
     counter++;
 
+    // Apply zoom factor on previous lengths.
+    for (int i = 0; i < counter; ++i) {
+      lengths[i] = floor(0.9 * lengths[i]);
+    }
+
     println(message + " freq:" + frequence + " gray:" + grayLevel);
   }
 }
