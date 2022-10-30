@@ -18,7 +18,6 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/bang")) {
     float frequence = theOscMessage.get(0).floatValue();
 
-    mainSet.zoomOut();
     mainSet.addBlock(frequence);
   }
 }
