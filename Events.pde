@@ -5,6 +5,16 @@
 void oscEvent(OscMessage theOscMessage) {
   message = theOscMessage.addrPattern();
   
+  if (theOscMessage.checkAddrPattern("/start")) {
+    println("Looping");
+    loop();
+  }
+
+  if (theOscMessage.checkAddrPattern("/stop")) {
+    println("Stop looping");
+    noLoop();
+  }
+
   if (theOscMessage.checkAddrPattern("/bang")) {
     frequence = theOscMessage.get(0).floatValue();
 
