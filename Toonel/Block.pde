@@ -6,14 +6,16 @@
 class Block {
   int note;
   float amplitude;
-
-  // Temporarily duration is in loops.
   float duration;
+  
+  String coloring;
 
   Block (int tempNote, float tempAmplitude) {
     duration = 0;
     note = tempNote;
     amplitude = tempAmplitude;
+
+    coloring = 'tunnel';
   }
 
   void incrementDuration() {
@@ -25,13 +27,16 @@ class Block {
   }
 
   /**
-   * Temporary method returning the color based on the frequency.
+   * Temporary method returning the color based on the block's frequency.
    */
   color getColor() {
     // Accepted notes only between A4 and A6.
     int hue = note % 12;
-    int brightness = floor(amplitude * 100);
-
+    int saturation = 1;
+    int brightness = 1;
+    
+    // int brightness = floor(amplitude * 100);
+    
     return color(hue, 1, brightness);
   }
 }

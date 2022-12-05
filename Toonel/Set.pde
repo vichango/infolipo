@@ -18,7 +18,11 @@
   Block getCurrentBlock() {
     int size = blocks.size();
 
-    return blocks.get(size - 1);
+    if (0 < size) {
+      return blocks.get(size - 1);
+    }
+
+    return null;
   }
 
   void addBlock(int note, float amplitude) {
@@ -30,9 +34,10 @@
   }
 
   void nextLoop() {
-    if (!isEmpty()) {
-      // Increase duration of current block.
-      Block current = getCurrentBlock();
+    // Increase duration of current block.
+    Block current = getCurrentBlock();
+
+    if (null !== current) {
       current.incrementDuration();
     }
   }
@@ -80,7 +85,15 @@
 
       // Set rect style.
       noStroke();
-      fill(current.getColor());
+      // - Get color from block.
+      color blockColor = current.getColor();
+      float hue = hue(blockColor);
+      float saturation = saturation(blockColor);
+      float brightness = saturation(blockColor);
+      // - Reduce brightness to create a tunnel effect.
+      brightness = 255 * ((blocks.size() - i) / blocks.size());
+
+      fill(hue, saturation, brightness);
 
       // Start drawing when we have two blocks.
       if (1 < blocks.size()) {
@@ -131,7 +144,7 @@
       current.zoomOutDuration(currentFactor);
     }
 
-    // Remove oldest pack of 4 if duration reaches already 0.
+    // Remove oldest pack of 4 if their duration is short enough.
     if (4 < blocks.size()) {
       boolean clean = true;
       for (int i = 0; clean && i < 4; i++) {
