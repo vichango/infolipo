@@ -15,16 +15,16 @@ print("Getting ready.")
 def print_and_send(address, *args):
     send_string = f"{address} {args[0]} {args[1]} {args[2]}\n"
     ser.write(send_string.encode('utf-8'))
-    print(f"Sent {address}: {send_string}")
+    print(f"Sent: {send_string}")
 
 def default_handler(address, *args):
-    print(f"Not sent {address}: {args}")
+    print(f"Not sent {address} {args}")
 
 dispatcher = Dispatcher()
 dispatcher.map("/note*", print_and_send)
 dispatcher.set_default_handler(default_handler)
 
-ip = "192.168.0.255"
+ip = "192.168.15.255"
 port = 12000
 
 server = BlockingOSCUDPServer((ip, port), dispatcher)
