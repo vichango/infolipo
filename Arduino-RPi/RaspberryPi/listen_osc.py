@@ -13,7 +13,7 @@ ser.flush() # Get rid of incomplete data.
 print("Getting ready.")
 
 def print_and_send(address, *args):
-    send_string = f"{address} {args}\n"
+    send_string = f"{address} {args[0]} {args[1]} {args[2]}\n"
     ser.write(send_string.encode('utf-8'))
     print(f"Sent {address}: {send_string}")
 
