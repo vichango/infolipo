@@ -13,9 +13,9 @@ ser.flush() # Get rid of incomplete data.
 print("Getting ready.")
 
 def print_and_send(address, *args):
-    print(f"Will send /note {address}: {send_string}")
     send_string = f"{args}\n"
     ser.write(send_string.encode('utf-8'))
+    print(f"Will send /note {address}: {send_string}")
 
 def default_handler(address, *args):
     print(f"(unknown) not sent {address}: {args}")
