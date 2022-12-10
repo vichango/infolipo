@@ -13,12 +13,12 @@ ser.flush() # Get rid of incomplete data.
 print("Getting ready.")
 
 def print_and_send(address, *args):
-    send_string = f"{args}\n"
+    send_string = f"{address} {args}\n"
     ser.write(send_string.encode('utf-8'))
-    print(f"Will send /note {address}: {send_string}")
+    print(f"Sent {address}: {send_string}")
 
 def default_handler(address, *args):
-    print(f"(unknown) not sent {address}: {args}")
+    print(f"Not sent {address}: {args}")
 
 dispatcher = Dispatcher()
 dispatcher.map("/note*", print_and_send)
