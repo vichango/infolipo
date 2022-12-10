@@ -1,11 +1,12 @@
 /**
- * Echo back a string received over serial port and match LED with silences.
+ * Listen on serial port 9600 for messages sent using a particular format of
+ * OSC messages relayed by an RPi but originally generated in Max.
  */
 
 void setup(){
   Serial.begin(9600);
 }
- 
+
 void loop(){
   if(Serial.available() > 0) {
     String allData = Serial.readStringUntil('\n');
@@ -19,23 +20,23 @@ void loop(){
 
     // Frequency.
     int secondSpace = firstSubData.indexOf(' ');
-    String frequency = firstSubData.substring(0, secondSpace);
-    
+    // String frequency = firstSubData.substring(0, secondSpace);
+
     // From frequency.
     String secondSubData = firstSubData.substring(secondSpace + 1);
 
     // Midi.
     int thirdSpace = secondSubData.indexOf(' ');
     int midi = secondSubData.substring(0, thirdSpace).toInt();
-    
+
     // From Midi.
-    String thirdSubData = secondSubData.substring(0, thirdSpace);
-    
+    // String thirdSubData = secondSubData.substring(0, thirdSpace);
+
     // Amplitude.
-    String amplitude = secondSubData.substring(thirdSpace + 1);
-    
-    Serial.print("Echo: ");
-    Serial.println(allData);
+    // String amplitude = secondSubData.substring(thirdSpace + 1);
+
+    // Serial.print("Echo: ");
+    // Serial.println(allData);
 
     int test = 1;
     if (-999 < midi) {
