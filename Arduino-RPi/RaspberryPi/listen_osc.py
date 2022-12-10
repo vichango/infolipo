@@ -14,7 +14,7 @@ def print_handler(address, *args):
     print(f"{address}: {args}")
 
 def send_to_arduino(address, *args):
-    send_string = f("{args}\n")
+    send_string = f"{args}\n"
     ser.write(send_string.encode('utf-8'))
 
 def default_handler(address, *args):
