@@ -1,8 +1,18 @@
 # README
 
-*⚠️ WIP*
+A multi-player version of the Game-of-life cellular automaton.
 
-Testing Game of Life implementations.
+At every iteration:
+
+1. We count, for each player, the number of alive neighbors around each cell.
+2. We try to solve conflicting cells by looking at which has the maximum number of neighbors. Only the cells with the maximum number of neighbohrs is kept alive.
+3. We apply Conway's ruleset independently for each player.
+
+We currently defines 3 players: Cyan, Magenta and Yellow.
+
+1. Press `R` to bring random cells alive (`10%`).
+2. Press `P` to pause the game.
+3. Press `Q` to quit the game.
 
 ## Multi-player cell coloring
 

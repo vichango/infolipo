@@ -4,7 +4,7 @@ import pygame
 from board import Board
 
 class Game:
-    def __init__(self, board: Board, cell_size=10, max_fps=25):
+    def __init__(self, board: Board, cell_size=10, max_fps=10):
         """
         Initialize the game, and sets defaults setting
         """
@@ -33,38 +33,62 @@ class Game:
         """
         self.screen.fill((0, 0, 0))
 
+    def draw_history(self, r, c, color):
+        """
+        Set the cell's background colors.
+        """
+
+        pygame.draw.rect(
+            self.screen,
+            color,
+            pygame.Rect(
+                c * self.cell_size,
+                r * self.cell_size,
+                self.cell_size,
+                self.cell_size,
+            )
+        )
+
     def draw_cell(self, r, c, colors):
         """
         Draw a cell.
         """
 
         if 0 < len(colors):
+            center = pygame.math.Vector2(
+                c * self.cell_size + self.cell_size / 2,
+                r * self.cell_size + self.cell_size / 2
+            )
 
             # Conflict color.
-            color = (255, 0, 0)
+            color = (0, 0, 0)
+            radius = self.cell_size / 4
 
             if 1 == len(colors):
                 color = colors[0]
+                radius = self.cell_size / 3
 
             pygame.draw.circle(
                 self.screen,
                 color,
-                (c * self.cell_size + self.cell_size / 2,
-                r * self.cell_size + self.cell_size / 2), self.cell_size / 2, 0
+                center,
+                radius,
+                0
             )
 
     def draw_grid(self):
         """
-        Draws the board grids.
+        Draws the board.
         """
 
         self.clear_screen()
 
-        def custom_sum(first, second):
-            return first + second
-
         for r in range(self.board.rows):
             for c in range(self.board.columns):
+                hp = self.board.history_grid[r][c]
+                if -1 < hp:
+                    self.draw_history(r, c, self.board.players[hp].bg_color)
+
                 colors = []
                 for p in range(len(self.board.players)):
                     if self.board.current_grid[r][c][p]:
