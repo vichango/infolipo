@@ -4,6 +4,40 @@
 
 Testing Game of Life implementations.
 
+## Multi-player cell coloring
+
+1. Average color:
+    ```python
+    import numpy as np
+
+    color = np.average(np.array(colors), axis=0)
+        pygame.draw.circle(
+            self.screen,
+            color,
+            (c * self.cell_size + self.cell_size / 2,
+            r * self.cell_size + self.cell_size / 2), self.cell_size / 2, 0
+        )
+    ```
+2. Partial arc per palyer:
+    ```python
+    arc = 2 * math.pi / len(colors)
+        arc_at = 0
+
+        for color in colors:
+            pygame.draw.arc(
+                self.screen,
+                color,
+                pygame.Rect(
+                    c * self.cell_size + self.cell_size / 2,
+                    r * self.cell_size + self.cell_size / 2,
+                    self.cell_size,
+                    self.cell_size
+                ),
+                arc_at,
+                arc_at + arc
+            )
+    ```
+
 ## References
 
 - Another implementation in Python ([here](https://github.com/BodaSadalla98/Cookbook/tree/main/python))

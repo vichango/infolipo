@@ -4,7 +4,7 @@ import pygame
 from board import Board
 
 class Game:
-    def __init__(self, board: Board, cell_size=10, max_fps=10):
+    def __init__(self, board: Board, cell_size=10, max_fps=25):
         """
         Initialize the game, and sets defaults setting
         """
@@ -29,9 +29,29 @@ class Game:
 
     def clear_screen(self):
         """
-        Basically clears the screen
+        Fill screen with black.
         """
         self.screen.fill((0, 0, 0))
+
+    def draw_cell(self, r, c, colors):
+        """
+        Draw a cell.
+        """
+
+        if 0 < len(colors):
+
+            # Conflict color.
+            color = (255, 0, 0)
+
+            if 1 == len(colors):
+                color = colors[0]
+
+            pygame.draw.circle(
+                self.screen,
+                color,
+                (c * self.cell_size + self.cell_size / 2,
+                r * self.cell_size + self.cell_size / 2), self.cell_size / 2, 0
+            )
 
     def draw_grid(self):
         """
@@ -40,19 +60,17 @@ class Game:
 
         self.clear_screen()
 
-        for i in range(len(self.board.grids)):
-            grid = self.board.grids[i]
+        def custom_sum(first, second):
+            return first + second
 
-            for r in range(self.board.rows):
-                for c in range(self.board.columns):
-                    if grid[r][c]:
-                        alive_color = self.board.players[i].color
-                        pygame.draw.circle(
-                            self.screen,
-                            alive_color,
-                            (c * self.cell_size + self.cell_size / 2,
-                            r * self.cell_size + self.cell_size / 2), self.cell_size / 2, 0
-                        )
+        for r in range(self.board.rows):
+            for c in range(self.board.columns):
+                colors = []
+                for p in range(len(self.board.players)):
+                    if self.board.current_grid[r][c][p]:
+                        colors.append(self.board.players[p].color)
+
+                self.draw_cell(r, c, colors)
 
         pygame.display.flip()
 
@@ -79,7 +97,7 @@ class Game:
             self.clear_screen()
             sys.exit()
         elif pygame.key.get_pressed()[pygame.K_r]:
-            self.board.randomize_grids()
+            self.board.randomize_grid()
 
     def run(self):
         """
