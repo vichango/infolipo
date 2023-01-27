@@ -14,6 +14,7 @@ float gain;
 float brightGain;
 boolean tunneling;
 float zoomFactor;
+String coloringSt;
 
 void setup() {
   // Should start already looping?
@@ -26,6 +27,8 @@ void setup() {
   brightGain = -3;
   // Zooming factor.
   zoomFactor = 0.95;
+  // Coloring style.
+  coloringSt = "cont"; // cont, norm
 
   // Screen size.
   // size(640, 480);

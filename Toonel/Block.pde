@@ -30,10 +30,30 @@ class Block {
    * Temporary method returning the color based on the block's frequency.
    */
   color getColor() {
-    // Accepted notes only between A4 and A6.
-    float hue = note % 12;
-    float saturation = 1;
-    float brightness = pow(amplitude, brightGain);
+    float hue = 0; // 0 - 12
+    float saturation = 0; // 0 - 1
+    float brightness = 0; // 0 - 100
+
+    switch(coloringSt) {
+      case "norm":
+        // Accepted notes only between A4 and A6.
+        hue = note % 12;
+        saturation = 1;
+        brightness = pow(amplitude, brightGain);
+        break;
+      case "cont":
+        float fNoteNum = 12 * log(freq / 440)/log(2) + 49;
+        float fNote = fNoteNum - 12 * floor(fNoteNum / 12);
+
+        float fOct = (fNoteNum + 8) / (12 * 8);
+
+        println("Fnote: " + fNote + " Foct: " + fOct);
+
+        hue = fNote; // 0 - 12
+        saturation = fOct; // 0 - 1
+        brightness = 100; // 0 - 100
+        break;
+    }
 
     return color(hue, saturation, brightness);
   }
