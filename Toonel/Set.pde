@@ -7,7 +7,13 @@
 
   ArrayList<Block> blocks = new ArrayList<Block>();
 
-  Set () {}
+  int setWidth;
+  int setHeight;
+
+  Set (int aWidth, int aHeight) {
+    setWidth = aWidth;
+    setHeight = aHeight;
+  }
 
   boolean isEmpty() {
     return blocks.isEmpty();
@@ -56,10 +62,10 @@
     float vRatio = 1.0;
 
     if (0 < boxWidth) {
-      hRatio = (float) width / boxWidth;
+      hRatio = (float) setWidth / boxWidth;
     }
     if (0 < boxHeight) {
-      vRatio = (float) height / boxHeight;
+      vRatio = (float) setHeight / boxHeight;
     }
 
     // Actual drawing.
@@ -207,8 +213,8 @@
     float boxHeight = boxBottom - boxTop;
 
     // Ratio of size to pixels.
-    float hRatio = 0 < boxWidth ? (float) width / boxWidth : 1.0;
-    float vRatio = 0 < boxHeight ? (float) height / boxHeight : 1.0;
+    float hRatio = 0 < boxWidth ? (float) setWidth / boxWidth : 1.0;
+    float vRatio = 0 < boxHeight ? (float) setHeight / boxHeight : 1.0;
 
     FloatDict boundaries = new FloatDict();
     boundaries.set("top", boxTop);
