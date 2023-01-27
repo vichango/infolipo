@@ -10,9 +10,12 @@ class Block {
 
   float duration;
 
-  Block (float tempFreq, int tempNote, float tempAmplitude) {
+  Block(float tempFreq, int tempNote, float tempAmplitude) {
     duration = 0;
+    setParams(tempFreq, tempNote, tempAmplitude);
+  }
 
+  void setParams(float tempFreq, int tempNote, float tempAmplitude) {
     freq = tempFreq;
     note = tempNote;
     amplitude = tempAmplitude;
@@ -51,7 +54,7 @@ class Block {
 
         hue = fNote; // 0 - 12
         saturation = fOct; // 0 - 1
-        brightness = 100; // 0 - 100
+        brightness = pow(amplitude, brightGain); // 0 - 100
         break;
     }
 

@@ -3,13 +3,9 @@ import java.util.Map;
 
 OscP5 oscP5;
 
-HashMap<String, Set> sets = new HashMap<String, Set>();
-
 String firstInst = "/A";
 String secondInst = "/B";
-
-Set mainSet;
-Set secondarySet;
+HashMap<String, Instrument> instruments = new HashMap<String, Instrument>();
 
 String currMessage = "";
 int currNote = 0;
@@ -20,12 +16,12 @@ float currAmplitude = 0;
 boolean looping = true;
 float gain = 1;
 float brightGain = -3;
-boolean tunneling = false;
-float tunnelingFactor = 1.25;
+boolean tunneling = true;
+float tunnelingFactor = 1.125;
 float zoomFactor = 0.975; // 0.95
 String coloringSt = "cont"; // norm, cont
 float silenceThresh = 0.010; // 0.001
-int statsWidth = 80;
+int statsHeight = 80;
 
 void setup() {
   // Initialize an instance listening to port 12000.
@@ -40,11 +36,11 @@ void setup() {
   colorMode(HSB, 13, 1, 100);
 
   // Init block set.
-  // FIXME Keep only the left stats window.
-  int setWidth = floor(.5 * width - statsWidth);
+  int setWidth = floor(.5 * width);
+  int setHeight = height - statsHeight;
 
-  sets.put(firstInst, new Set(setWidth, height));
-  sets.put(secondInst, new Set(setWidth, height));
+  instruments.put(firstInst, new Instrument(firstInst, setWidth, setHeight));
+  instruments.put(secondInst, new Instrument(secondInst, setWidth, setHeight));
 
   background(0);
 
@@ -57,39 +53,27 @@ void setup() {
 void draw() {
   background(0);
 
-  // Process.
-  switch (currMessage) {
-    case "/A":
-      sets.get(firstInst).processs(currFreq, currNote, currAmplitude);
-      break;
-    case "/B":
-      sets.get(secondInst).processs(currFreq, currNote, currAmplitude);
-      break;
+  // Check last read message and process.
+  if (currMessage.equals(firstInst)) {
+    instruments.get(firstInst).processs(currFreq, currNote, currAmplitude);
+  } else if (currMessage.equals(secondInst)) {
+    instruments.get(secondInst).processs(currFreq, currNote, currAmplitude);
   }
 
-  int setWidth = floor(.5 * width - statsWidth);
+  int setWidth = floor(.5 * width);
+  int setHeight = height - statsHeight;
 
-  translate(floor(-.5 * setWidth), 0);
-  if (!sets.get(firstInst).isEmpty()) {
-    sets.get(firstInst).nextLoop();
-    sets.get(firstInst).display();
-  }
-
+  // Animation.
+  translate(floor(-.5 * setWidth), floor(-.5 * statsHeight));
+  instruments.get(firstInst).display();
   translate(setWidth, 0);
-  if (!sets.get(secondInst).isEmpty()) {
-    sets.get(secondInst).nextLoop();
-    sets.get(secondInst).display();
-  }
+  instruments.get(secondInst).display();
 
-  translate(floor(-.5 * setWidth), 0);
-  textSize(12);
-  fill(12, 0, 100);
-  text("f: " + currFreq, 10, 26);
-  fill(12, 0, 100);
-  text("n: " + currNote, 10, 46);
-  fill(12, 0, 100);
-  text("a: " + currAmplitude, 10, 66);
-  text("m: " + currMessage, 10, 86);
+  // Stats.
+  translate(floor(-.5 * setWidth), setHeight + floor(.5 * statsHeight));
+  instruments.get(firstInst).displayStats();
+  translate(setWidth, 0);
+  instruments.get(secondInst).displayStats();
 }
 
 void mouseClicked() {

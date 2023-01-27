@@ -10,30 +10,9 @@
   int setWidth;
   int setHeight;
 
-  float lastFreq;
-  int lastNote;
-  float lastAmplitude;
-
   Set (int aWidth, int aHeight) {
     setWidth = aWidth;
     setHeight = aHeight;
-
-    lastFreq = 0;
-    lastNote = 0;
-    lastAmplitude = 0;
-  }
-
-  void processs(float freq, int note, float amplitude) {
-    int lastNoteTemp = lastNote;
-
-    lastFreq = freq;
-    lastNote = note;
-    lastAmplitude = amplitude;
-
-    // Do stuff.
-    if (-999 < lastNote && (lastNoteTemp != lastNote || silenceThresh > lastAmplitude)) {
-      addBlock(lastFreq, lastNote, lastAmplitude);
-    }
   }
 
   boolean isEmpty() {
@@ -56,6 +35,10 @@
 
     Block newBlock = new Block(freq, note, amplitude);
     blocks.add(newBlock);
+  }
+
+  void updateLastBlock(float freq, int note, float amplitude) {
+    blocks.get(blocks.size() - 1).setParams(freq, note, amplitude);
   }
 
   void nextLoop() {
