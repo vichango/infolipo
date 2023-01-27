@@ -25,11 +25,11 @@
     return null;
   }
 
-  void addBlock(int note, float amplitude) {
+  void addBlock(float freq, int note, float amplitude) {
     // Zoom out.
     zoomOut();
 
-    Block newBlock = new Block(note, amplitude);
+    Block newBlock = new Block(freq, note, amplitude);
     blocks.add(newBlock);
   }
 
@@ -37,7 +37,7 @@
     // Increase duration of current block.
     Block current = getCurrentBlock();
 
-    if (null !== current) {
+    if (null != current) {
       current.incrementDuration();
     }
   }
@@ -87,13 +87,18 @@
       noStroke();
       // - Get color from block.
       color blockColor = current.getColor();
+
       float hue = hue(blockColor);
       float saturation = saturation(blockColor);
-      float brightness = saturation(blockColor);
+      float brightness = brightness(blockColor);
+
       // - Reduce brightness to create a tunnel effect.
-      brightness = 255 * ((blocks.size() - i) / blocks.size());
+      // brightness = 255 * ((blocks.size() - i) / blocks.size());
 
       fill(hue, saturation, brightness);
+      // fill(10, 1, 100);
+
+      // println("Hue: " + hue + " Sat: " + saturation + " Bri:" + brightness);
 
       // Start drawing when we have two blocks.
       if (1 < blocks.size()) {
