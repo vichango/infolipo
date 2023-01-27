@@ -205,19 +205,10 @@
     // Box size.
     float boxWidth = boxRight - boxLeft;
     float boxHeight = boxBottom - boxTop;
-    float boxCenterX = boxLeft + (float) boxWidth / 2;
-    float boxCenterY = boxTop + (float) boxHeight / 2;
 
     // Ratio of size to pixels.
-    float hRatio = 1.0;
-    float vRatio = 1.0;
-
-    if (0 < boxWidth) {
-      hRatio = (float) width / boxWidth;
-    }
-    if (0 < boxHeight) {
-      vRatio = (float) height / boxHeight;
-    }
+    float hRatio = 0 < boxWidth ? (float) width / boxWidth : 1.0;
+    float vRatio = 0 < boxHeight ? (float) height / boxHeight : 1.0;
 
     FloatDict boundaries = new FloatDict();
     boundaries.set("top", boxTop);

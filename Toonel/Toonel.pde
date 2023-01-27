@@ -16,6 +16,7 @@ boolean tunneling = false;
 float tunnelingFactor = 1.25;
 float zoomFactor = 0.975; // 0.95
 String coloringSt = "cont"; // norm, cont
+float silenceThresh = 0.010; // 0.001
 
 void setup() {
   // Screen size.

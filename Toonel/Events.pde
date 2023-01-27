@@ -14,19 +14,7 @@ void oscEvent(OscMessage theOscMessage) {
       lastNote = theOscMessage.get(1).intValue();
       lastAmplitude = gain * theOscMessage.get(2).floatValue();
 
-      // println("Freq: " + lastFreq + " Note: " + lastNote + " Amp:" + lastAmplitude);
-
-      // if (!started && 0.5 < lastAmplitude) {
-      //   started = true;
-      //   println("Started draw loop");
-      //   loop();
-      // }
-
-      // if (60 > lastNote) {
-      //   mainSet.addBlock(lastFreq, lastNote, lastAmplitude);
-      // }
-
-      if (lastNoteTmp != lastNote || 0.001 > lastAmplitude) {
+      if (lastNoteTmp != lastNote || (-999 < lastNote && silenceThresh > lastAmplitude)) {
         mainSet.addBlock(lastFreq, lastNote, lastAmplitude);
       }
 
