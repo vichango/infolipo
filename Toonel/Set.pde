@@ -5,8 +5,6 @@
   final boolean initialHorizonal = true;
   final boolean initialNegative = false;
 
-  final float zoomFactor = 0.95;
-
   ArrayList<Block> blocks = new ArrayList<Block>();
 
   Set () {}
@@ -92,13 +90,12 @@
       float saturation = saturation(blockColor);
       float brightness = brightness(blockColor);
 
-      // - Reduce brightness to create a tunnel effect.
-      // brightness = 255 * ((blocks.size() - i) / blocks.size());
+      // - Tunnel effect.
+      if (tunneling) {
+        brightness = brightness * pow((float) i / blocks.size(), 2);
+      }
 
       fill(hue, saturation, brightness);
-      // fill(10, 1, 100);
-
-      // println("Hue: " + hue + " Sat: " + saturation + " Bri:" + brightness);
 
       // Start drawing when we have two blocks.
       if (1 < blocks.size()) {

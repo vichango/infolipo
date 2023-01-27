@@ -10,16 +10,12 @@ class Block {
 
   float duration;
 
-  String coloring;
-
   Block (float tempFreq, int tempNote, float tempAmplitude) {
     duration = 0;
 
     freq = tempFreq;
     note = tempNote;
     amplitude = tempAmplitude;
-
-    coloring = "tunnel";
   }
 
   void incrementDuration() {
@@ -35,11 +31,9 @@ class Block {
    */
   color getColor() {
     // Accepted notes only between A4 and A6.
-    int hue = note % 12;
-    int saturation = 1;
-    int brightness = 100;
-
-    // int brightness = floor(amplitude * 100);
+    float hue = note % 12;
+    float saturation = 1;
+    float brightness = pow(amplitude, brightGain);
 
     return color(hue, saturation, brightness);
   }

@@ -11,13 +11,25 @@ float lastAmplitude;
 // Variables.
 boolean looping;
 float gain;
+float brightGain;
+boolean tunneling;
+float zoomFactor;
 
 void setup() {
-  size(640, 480);
-  //size(1280, 960);
+  // Should start already looping?
+  looping = true;
+  // Should use tunneling effect?
+  tunneling = false;
+  // Amplitude gain at capture.
+  gain = 1;
+  // Amplitude gain at brightness.
+  brightGain = -3;
+  // Zooming factor.
+  zoomFactor = 0.95;
 
-  looping = false;
-  gain = 256;
+  // Screen size.
+  // size(640, 480);
+  size(1280, 960);
 
   rectMode(CENTER);
   colorMode(HSB, 13, 1, 100);
@@ -28,9 +40,12 @@ void setup() {
   // Initialize an instance listening to port 12000.
   oscP5 = new OscP5(this, 12000);
 
-  // Start not looping.
   background(0);
-  noLoop();
+
+  // Start not looping.
+  if (!looping) {
+    noLoop();
+  }
 }
 
 void draw() {
@@ -42,6 +57,14 @@ void draw() {
 
   mainSet.nextLoop();
   mainSet.display();
+
+  textSize(16);
+  fill(12, 0, 100);
+  text("freq: " + lastFreq, 20, 36);
+  fill(12, 0, 100);
+  text("midi: " + lastNote, 20, 56);
+  fill(12, 0, 100);
+  text("amp: " + lastAmplitude, 20, 76);
 }
 
 void mouseClicked() {
