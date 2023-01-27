@@ -43,11 +43,11 @@ class Block {
         break;
       case "cont":
         float fNoteNum = 12 * log(freq / 440)/log(2) + 49;
-        float fNote = fNoteNum - 12 * floor(fNoteNum / 12);
+        float fNote = max(0, fNoteNum - 12 * floor(fNoteNum / 12));
 
-        float fOct = (fNoteNum + 8) / (12 * 8);
+        float fOct = max(0, (fNoteNum + 8) / (12 * 8));
 
-        println("Fnote: " + fNote + " Foct: " + fOct);
+        // println("Fnote: " + fNote + " Foct: " + fOct);
 
         hue = fNote; // 0 - 12
         saturation = fOct; // 0 - 1
