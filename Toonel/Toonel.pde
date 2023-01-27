@@ -9,27 +9,15 @@ float lastFreq;
 float lastAmplitude;
 
 // Variables.
-boolean looping;
-float gain;
-float brightGain;
-boolean tunneling;
-float zoomFactor;
-String coloringSt;
+boolean looping = true;
+float gain = 1;
+float brightGain = -3;
+boolean tunneling = false;
+float tunnelingFactor = 1.25;
+float zoomFactor = 0.975; // 0.95
+String coloringSt = "cont"; // norm, cont
 
 void setup() {
-  // Should start already looping?
-  looping = true;
-  // Should use tunneling effect?
-  tunneling = false;
-  // Amplitude gain at capture.
-  gain = 1;
-  // Amplitude gain at brightness.
-  brightGain = -3;
-  // Zooming factor.
-  zoomFactor = 0.95;
-  // Coloring style.
-  coloringSt = "cont"; // cont, norm
-
   // Screen size.
   // size(640, 480);
   size(1280, 960);
@@ -68,6 +56,10 @@ void draw() {
   text("midi: " + lastNote, 20, 56);
   fill(12, 0, 100);
   text("amp: " + lastAmplitude, 20, 76);
+
+  if (looping) {
+    text("looping!", 20, 96);
+  }
 }
 
 void mouseClicked() {

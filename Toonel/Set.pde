@@ -92,7 +92,7 @@
 
       // - Tunnel effect.
       if (tunneling) {
-        brightness = brightness * pow((float) i / blocks.size(), 2);
+        brightness = brightness * pow((float) i / blocks.size(), tunnelingFactor);
       }
 
       fill(hue, saturation, brightness);
